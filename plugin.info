@@ -1,0 +1,9 @@
+{
+    "title": "$:/plugins/tadeaspaule/twsr",
+    "description": "Spaced Repetition system for TiddlyWiki. Doesn't require any external managers like Anki",
+    "author": "Tadeas Paule",
+    "version": "0.1.0",
+    "core-version": ">=5.0.8",
+    "source": "https://github.com/tadeaspaule/twsr",
+    "plugin-type": "plugin"
+}

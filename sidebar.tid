@@ -1,0 +1,23 @@
+created: 20200511221340000
+modified: 20200922145300000
+tags: $:/tags/SideBar
+caption: SR
+list-after: $:/core/ui/SideBar/Open
+title: $:/plugins/tadeaspaule/twsr/sidebar
+type: text/vnd.tiddlywiki
+
+<div id="twsr-sidebar">
+<div id="twsr-decks" class="tc-tags-wrapper"/>
+<div class="twsr-revising">
+<span id="twsr-revising-name">Revising: </span>
+(<a id="twsr-revising-show" class="tc-tiddlylink"></a>)
+</div>
+<div id="twsr-res-btns">
+<div id="twsr-res-again">again</div>
+<div id="twsr-res-hard">hard</div>
+<div id="twsr-res-good">good</div>
+<div id="twsr-res-easy">easy</div>
+</div>
+</div>
+
+<<twsr-sidebar-open>>

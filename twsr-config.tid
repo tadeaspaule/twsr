@@ -1,0 +1,14 @@
+created: 20200511221340000
+modified: 20200922145300000
+tags: 
+title: $:/config/twsr-config
+type: application/json
+
+{
+    "decks": [],
+    "failMultiplier": 0,
+    "multiplier": 1,
+    "easyMultiplier": 1.3,
+    "memoryStrength": 1300,
+    "minMemoryStrength": 1300
+}

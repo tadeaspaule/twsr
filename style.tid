@@ -1,0 +1,19 @@
+created: 20190621094602422
+modified: 20191101072404775
+tags: $:/tags/Stylesheet
+title: $:/plugins/tadeaspaule/twsr/style
+type: text/plain
+
+#twsr-sidebar {
+  display:flex;
+  flex-direction:column;
+}
+#twsr-res-btns {
+  display:flex;
+  flex-direction:row;
+}
+#twsr-res-btns div {
+  cursor:pointer;
+  margin: 5px;
+}
+
