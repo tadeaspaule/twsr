@@ -25,7 +25,11 @@ In this system, ''decks = tags'', so for example if you want to revise german:
 !!! Creating flashcards
 Simply add a `twsr` tag to a tiddler and it becomes a flashcard (it also needs to be tagged with a deck).
 
-At the moment, its title is used as the prompt, and "flipping" the flashcard means opening and navigating to that tiddler. In the future, I may add more customization options (or you can! check the TODO section)
+If you want to specify a prompt, add a `prompt` field (see example [[(twsr) Card with prompt]]).
+
+If you want to specify a Cloze prompt, add a `prompt` field with a value like `Some c[of] c[this] is c[hidden]` (see example [[(twsr) Card with Cloze prompt]]).
+
+If none is given, the tiddler's title will be used as a prompt.
 
 !!! Revising
 # There is a sidebar tab called `SR` wherever you have your sidebar. Open it
@@ -47,8 +51,6 @@ There is a public [[GitHub repository|https://github.com/tadeaspaule/twsr]] for 
 !! TODO
 There is much that can be improved on this plugin. For example:
 
-* add customization for prompts (Cloze prompts etc), perhaps with a field on a tiddler?
-* minor UI improvements (maybe nice buttons for the 4 result types)
 * after `again`, ensure the card doesn't repeat until you've seen all current ones
 * import functionality and in general making the migration from TiddlyWiki + Anki (or equivalent) to just TiddlyWiki smoother
 * way to see your performance, for example with the d3 plugin and a chart?

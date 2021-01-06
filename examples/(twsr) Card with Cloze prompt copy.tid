@@ -1,0 +1,8 @@
+created: 20210106060338368
+modified: 20210106060406417
+tags: example-deck twsr
+title: (twsr) Card with Cloze prompt
+type: text/vnd.tiddlywiki
+prompt: Some c[of] these c[words] c[are] hidden
+
+This is an example card

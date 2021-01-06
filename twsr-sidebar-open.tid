@@ -166,7 +166,22 @@ function setCurrentlyRevising(deckName,index) {
     currentlyRevising = value
     currentlyRevisingDeck = deckName
     currentlyRevisingAt = index
-    revisingNameText.textContent = 'Revising: ' + value
+    var prompt = value
+    if (tiddler2details[currentlyRevising].prompt) {
+        prompt = tiddler2details[currentlyRevising].prompt
+        // check if Cloze prompt
+        var clozeParts = prompt.match(/c\[[^\]]+\]/g)
+        if (clozeParts && clozeParts.length > 0) {
+            var i = Math.floor(Math.random() * clozeParts.length)
+            // hide one of the parts
+            prompt = prompt.replace(clozeParts[i], "____")
+            // reveal the rest
+            for (var idx = 0; idx < clozeParts.length; idx++) {
+                prompt = prompt.replace(clozeParts[idx], clozeParts[idx].slice(2,clozeParts[idx].length-1))
+            }
+        }
+    }
+    revisingNameText.textContent = 'Revising: ' + prompt
     revisingShowLink.href = '#'+value // TODO instead use some $tw navigation functionality?
     // revisingShowLink.addEventListener('click', function() { everything I try still ends up with # remaining
     //     setTimeout(() => { // not a big deal but annoying
