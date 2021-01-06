@@ -1,5 +1,5 @@
-created: 20191026223026465
-modified: 20200922144859000
+created: 20210106052443123
+modified: 20210106052443123
 module-type: macro
 tags: 
 title: $:/plugins/tadeaspaule/twsr/twsr-sidebar-open
@@ -21,6 +21,7 @@ var currentlyRevising = null
 var currentlyRevisingAt = -1
 const configFilename = "$:/config/twsr-config"
 const delaysFilename = "$:/config/twsr-delays"
+const intervalsFilename = "$:/config/twsr-intervals"
 var allTiddlers = $tw.wiki.allTitles()
 var config = JSON.parse($tw.wiki.getTiddler(configFilename).fields.text)
 const minMemoryStrength = config.minMemoryStrength || 1300 // used by Anki
@@ -31,6 +32,7 @@ const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // to decrease del
 const logPrefix = "TWSR: "
 console.log(logPrefix + diffDays + " days since last revision")
 var delays = JSON.parse($tw.wiki.getTiddler(delaysFilename).fields.text)
+var intervals = JSON.parse($tw.wiki.getTiddler(intervalsFilename).fields.text)
 var tiddler2details = {}
 var deck2Tiddlers = {}
 for (var i = 0; i < allTiddlers.length; i++) {
@@ -48,17 +50,14 @@ for (var i = 0; i < allTiddlers.length; i++) {
         }
     }
 }
-function saveConfig () {
-    $tw.wiki.addTiddler(new $tw.Tiddler({title: configFilename, text: JSON.stringify(config,null,"\t"), type: "application/json"}))
-}
-function saveConfigAndDelays () {
-    saveConfig()
-    $tw.wiki.addTiddler(new $tw.Tiddler({title: delaysFilename, text: JSON.stringify(delays,null,"\t"), type: "application/json"}))
+function saveJson (filename, tiddler) {
+    $tw.wiki.addTiddler(new $tw.Tiddler({title: filename, text: JSON.stringify(tiddler,null,"\t"), type: "application/json"}))
 }
 if (diffDays > 0) {
     // delays were changed, update timestamp and delays tiddler
     config.lastTimestamp = currentTimestamp
-    saveConfigAndDelays()
+    saveJson(configFilename,config)
+    saveJson(delaysFilename,delays)
 }
 // setup UI and functionality ----------------------------------------------------
 // add deck functionality
@@ -69,7 +68,7 @@ addDeckInput.addEventListener("keyup", function(event) {
         event.preventDefault();
         if (!config.decks.includes(addDeckInput.value)) {
             config.decks.push(addDeckInput.value)
-            saveConfig()
+            saveJson(configFilename,config)
             addDeckButton(addDeckInput.value)
             addDeckInput.value = ''
         }
@@ -102,10 +101,13 @@ revisingShowLink.addEventListener('click', showResultButtons)
 var results = ['again','hard','good','easy']
 var resultButtons = document.getElementById("twsr-res-btns")
 function finishOneRevision(newDelay, newMemoryStrength) {
-    // update delays and config DataTiddlers
+    // update delays, config, intervals DataTiddlers
     delays[currentlyRevising] = newDelay
     config.memoryStrength = newMemoryStrength
-    saveConfigAndDelays()
+    intervals[currentlyRevising] = newDelay
+    saveJson(configFilename,config)
+    saveJson(delaysFilename,delays)
+    saveJson(intervalsFilename,intervals)
     // update deck UI and data
     console.log(logPrefix + "new delay for \"" + currentlyRevising +"\" is " + newDelay)
     if (newDelay > 0) resetDeck(currentlyRevisingDeck)
@@ -129,12 +131,11 @@ for (var i = 0; i < 4; i++) {
     })
 }
 function resultButtonClicked (index) {
-    var previousDelay = delays[currentlyRevising] || 0
     // using Anki algorithms found described here: https://gist.github.com/fasiha/31ce46c36371ff57fdbc1254af424174
     var m0 = config.failMultiplier || 0, m = config.multiplier || 1, m4 = config.easyMultiplier || 1.3
     var f = Math.max(config.memoryStrength || 0, minMemoryStrength)
-    var i = previousDelay, d = previousDelay,
-        i1 = m0 * previousDelay,
+    var i = intervals[currentlyRevising] || 0, d = isNaN(delays[currentlyRevising]) ? 0 : Math.abs(delays[currentlyRevising]),
+        i1 = m0 * i,
         i2 = Math.max(i + 1, (i + d/4) * 1.2 * m),
         i3 = Math.max(i2 + 1, (i + d/2) * (f / 1000) * m),
         i4 = Math.max(i3 + 1, (i + d) * (f / 1000) * m * m4)

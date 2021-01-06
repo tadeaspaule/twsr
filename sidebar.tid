@@ -7,6 +7,9 @@ title: $:/plugins/tadeaspaule/twsr/sidebar
 type: text/vnd.tiddlywiki
 
 <div id="twsr-sidebar">
+<div id="twsr-add-deck">
+<input type="text" placeholder="Write tag to add as deck">
+</div>
 <div id="twsr-decks" class="tc-tags-wrapper"/>
 <div class="twsr-revising">
 <span id="twsr-revising-name">Revising: </span>
