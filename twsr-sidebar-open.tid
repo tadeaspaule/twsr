@@ -78,9 +78,10 @@ addDeckInput.addEventListener("keyup", function(event) {
 var reviseAnythingBtn = document.getElementById("twsr-revise-anything").children[0]
 reviseAnythingBtn.addEventListener('click', function () {
     var cardCount = 0
-    config.decks.forEach(d => { cardCount += deck2Tiddlers[d].length })
+    config.decks.forEach(d => { cardCount += deck2Tiddlers[d] ? deck2Tiddlers[d].length : 0 })
     var i = Math.floor(Math.random() * cardCount)
     for (var d = 0; d < config.decks.length; d++) {
+        if (!deck2Tiddlers[config.decks[d]]) continue
         for (var idx = 0; idx < deck2Tiddlers[config.decks[d]].length; idx++) {
             if (i == 0) {
                 setCurrentlyRevising(config.decks[d], idx)
@@ -205,7 +206,7 @@ function setCurrentlyRevising(deckName,index) {
         Math.max(minMemoryStrength, f + 150)
     ]
     for (var idx = 0; idx < 4; idx++) {
-        resultButtons.children[idx].innerHTML = results[idx] + "<br/>(" + newDelays[idx] + "d)"
+        resultButtons.children[idx].innerHTML = results[idx] + "<br/>(" + Math.ceil(newDelays[idx]) + "d)"
     }
 }
 function showResultButtons () {
