@@ -16,4 +16,6 @@ type: text/plain
   cursor:pointer;
   margin: 5px;
 }
-
+#twsr-revise-anything {
+  margin: 5px 0px;
+}

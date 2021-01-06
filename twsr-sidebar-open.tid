@@ -74,7 +74,23 @@ addDeckInput.addEventListener("keyup", function(event) {
         }
     }
 });
-
+// revise anything
+var reviseAnythingBtn = document.getElementById("twsr-revise-anything").children[0]
+reviseAnythingBtn.addEventListener('click', function () {
+    var cardCount = 0
+    config.decks.forEach(d => { cardCount += deck2Tiddlers[d].length })
+    var i = Math.floor(Math.random() * cardCount)
+    for (var d = 0; d < config.decks.length; d++) {
+        for (var idx = 0; idx < deck2Tiddlers[config.decks[d]].length; idx++) {
+            if (i == 0) {
+                setCurrentlyRevising(deck2Tiddlers[config.decks[d]], idx)
+                return
+            }
+            i--
+        }
+    }
+})
+// deck-specific revise
 var twsrDecks = document.getElementById("twsr-decks")
 function resetDeck (deckName) {
     deck2Tiddlers[deckName].splice(currentlyRevisingAt,1)
@@ -82,14 +98,17 @@ function resetDeck (deckName) {
     deckElem.textContent = deckName + " (" + (deck2Tiddlers[deckName] || []).length + ")"
 }
 function addDeckButton (deckName) {
-    var deckElem = document.createElement('button')
-    deckElem.id = "twsr-deck-" + deckName
-    deckElem.className = 'tc-tag-label tc-tag-list-item tc-btn-invisible'
-    deckElem.addEventListener('click', function () {
-        if (!deck2Tiddlers[deckName] || deck2Tiddlers[deckName].length == 0) return
-        setCurrentlyRevising(deckName, Math.floor(Math.random()*deck2Tiddlers[deckName].length))
-    })
-    twsrDecks.appendChild(deckElem)
+    var deckElem = document.getElementById("twsr-deck-" + deckName)
+    if (!deckElem) {
+        deckElem = document.createElement('button')
+        deckElem.id = "twsr-deck-" + deckName
+        deckElem.className = 'tc-tag-label tc-tag-list-item tc-btn-invisible'
+        deckElem.addEventListener('click', function () {
+            if (!deck2Tiddlers[deckName] || deck2Tiddlers[deckName].length == 0) return
+            setCurrentlyRevising(deckName, Math.floor(Math.random()*deck2Tiddlers[deckName].length))
+        })
+        twsrDecks.appendChild(deckElem)
+    }
     deckElem.textContent = deckName + " (" + (deck2Tiddlers[deckName] || []).length + ")"
 }
 config.decks.forEach(d => {

@@ -10,6 +10,10 @@ type: text/vnd.tiddlywiki
 <div id="twsr-add-deck">
 <input type="text" placeholder="Write tag to add as deck">
 </div>
+<div id="twsr-revise-anything">
+<button>Revise anything</button>
+</div>
+<div>Or choose a specific deck:</div>
 <div id="twsr-decks" class="tc-tags-wrapper"/>
 <div class="twsr-revising">
 <span id="twsr-revising-name">Revising: </span>
