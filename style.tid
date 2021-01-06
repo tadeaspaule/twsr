@@ -11,9 +11,9 @@ type: text/plain
 #twsr-res-btns {
   display:flex;
   flex-direction:row;
+  flex-wrap:wrap;
 }
-#twsr-res-btns div {
-  cursor:pointer;
+#twsr-res-btns button {
   margin: 5px;
 }
 #twsr-revise-anything {

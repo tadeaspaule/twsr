@@ -13,6 +13,6 @@ Check the demo and import the plugin here: https://tadeaspaule.com/twsr
 
 ## TODO
 - add customization for prompts (Cloze prompts etc), perhaps with a field on a tiddler?
-- minor UI improvements (maybe nice buttons for the 4 result types)
 - after `again`, ensure the card doesn't repeat until you've seen all current ones
 - import functionality and in general making the migration from TiddlyWiki + Anki (or equivalent) to just TiddlyWiki smoother
+- way to see your performance, for example with the d3 plugin and a chart?

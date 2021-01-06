@@ -5,7 +5,7 @@ title: $:/config/twsr-config
 type: application/json
 
 {
-    "decks": [],
+    "decks": ["example-deck"],
     "failMultiplier": 0,
     "multiplier": 1,
     "easyMultiplier": 1.3,
