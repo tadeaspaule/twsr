@@ -94,7 +94,6 @@ reviseAnythingBtn.addEventListener('click', function () {
 // deck-specific revise
 var twsrDecks = document.getElementById("twsr-decks")
 function resetDeck (deckName) {
-    deck2Tiddlers[deckName].splice(currentlyRevisingAt,1)
     var deckElem = document.getElementById("twsr-deck-" + deckName)
     deckElem.textContent = deckName + " (" + (deck2Tiddlers[deckName] || []).length + ")"
 }
@@ -130,7 +129,20 @@ function finishOneRevision(newDelay, newMemoryStrength) {
     saveJson(intervalsFilename,intervals)
     // update deck UI and data
     console.log(logPrefix + "new delay for \"" + currentlyRevising +"\" is " + newDelay)
-    if (newDelay > 0) resetDeck(currentlyRevisingDeck)
+    if (newDelay > 0) {
+        tiddler2details[currentlyRevising].tags.forEach(t => {
+            if (deck2Tiddlers[t]) {
+                for (var i = 0; i < deck2Tiddlers[t].length; i++) {
+                    if (deck2Tiddlers[t][i] == currentlyRevising) {
+                        console.log(logPrefix + "Removing revised card from deck " + t)
+                        deck2Tiddlers[t].splice(i,1)
+                        resetDeck(t)
+                        break
+                    }
+                }
+            }
+        })
+    }
     if (deck2Tiddlers[currentlyRevisingDeck].length > 0) {
         // show new thing to revise ...
         setCurrentlyRevising(currentlyRevisingDeck, Math.floor(Math.random()*deck2Tiddlers[currentlyRevisingDeck].length))
@@ -144,7 +156,6 @@ function finishOneRevision(newDelay, newMemoryStrength) {
 for (var i = 0; i < 4; i++) {
     const idx = i
     var resBtn = document.getElementById("twsr-res-" + results[idx])
-    resBtn.delete
     resBtn.addEventListener('click', function () {
         resultButtonClicked(idx)
         resultButtons.style.display = 'none'
@@ -159,8 +170,6 @@ function resultButtonClicked (index) {
 }
 resultButtons.style.display = 'none'
 function setCurrentlyRevising(deckName,index) {
-    console.log(deckName)
-    console.log(index)
     var value = deck2Tiddlers[deckName][index]
     if (!value) return
     console.log(logPrefix + "Currently revising set to " + value)
