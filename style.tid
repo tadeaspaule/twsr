@@ -13,9 +13,35 @@ type: text/plain
   flex-direction:row;
   flex-wrap:wrap;
 }
-#twsr-res-btns button {
-  margin: 5px;
+#twsr-res-btns div {
+  margin: 3px;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0px 5px;
+  text-align: center;
+  min-width: 46px;
+}
+#twsr-res-btns div:hover {
+  opacity: 1;
+  cursor: pointer;
 }
 #twsr-revise-anything {
   margin: 5px 0px;
+}
+#twsr-number-to-revise {
+  margin-top:5px;
+}
+#twsr-res-again {
+  border-color: red ! important;
+}
+#twsr-res-hard {
+  border-color: black ! important;
+}
+#twsr-res-good {
+  border-color: green ! important;
+}
+#twsr-res-easy {
+  border-color: blue ! important;
 }

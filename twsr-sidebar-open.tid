@@ -35,19 +35,23 @@ var delays = JSON.parse($tw.wiki.getTiddler(delaysFilename).fields.text)
 var intervals = JSON.parse($tw.wiki.getTiddler(intervalsFilename).fields.text)
 var tiddler2details = {}
 var deck2Tiddlers = {}
+var totalToRevise = 0
 for (var i = 0; i < allTiddlers.length; i++) {
     var tiddler = $tw.wiki.getTiddler(allTiddlers[i])
     if (tiddler && tiddler.fields && tiddler.fields.tags && tiddler.fields.tags.includes("twsr")) {
+        if (!delays[tiddler.fields.title]) delays[tiddler.fields.title] = 0
+        else delays[tiddler.fields.title] = delays[tiddler.fields.title] - diffDays
+        if (delays[tiddler.fields.title] && delays[tiddler.fields.title] > 0) continue // tiddler not yet due for revision
+        tiddler2details[tiddler.fields.title] = tiddler.fields
+        var tiddlerHasDeck = false
         for (var d = 0; d < config.decks.length; d++) {
             if (tiddler.fields.tags.includes(config.decks[d])) {
-                if (!delays[tiddler.fields.title]) delays[tiddler.fields.title] = 0
-                else delays[tiddler.fields.title] = delays[tiddler.fields.title] - diffDays
-                if (delays[tiddler.fields.title] > 0) continue // tiddler not yet due for revision
-                tiddler2details[tiddler.fields.title] = tiddler.fields
+                tiddlerHasDeck = true
                 if (deck2Tiddlers[config.decks[d]] == undefined) deck2Tiddlers[config.decks[d]] = []
                 deck2Tiddlers[config.decks[d]].push(tiddler.fields.title)
             }
         }
+        if (tiddlerHasDeck) totalToRevise += 1
     }
 }
 function saveJson (filename, tiddler) {
@@ -75,8 +79,9 @@ addDeckInput.addEventListener("keyup", function(event) {
     }
 });
 // revise anything
-var reviseAnythingBtn = document.getElementById("twsr-revise-anything").children[0]
-reviseAnythingBtn.addEventListener('click', function () {
+var revisingAnything = false
+function reviseAnything() {
+    revisingAnything = true
     var cardCount = 0
     config.decks.forEach(d => { cardCount += deck2Tiddlers[d] ? deck2Tiddlers[d].length : 0 })
     var i = Math.floor(Math.random() * cardCount)
@@ -90,13 +95,17 @@ reviseAnythingBtn.addEventListener('click', function () {
             i--
         }
     }
-})
+}
+var reviseAnythingBtn = document.getElementById("twsr-revise-anything").children[0]
+reviseAnythingBtn.addEventListener('click', reviseAnything)
 // deck-specific revise
 var twsrDecks = document.getElementById("twsr-decks")
 function resetDeck (deckName) {
     var deckElem = document.getElementById("twsr-deck-" + deckName)
     deckElem.textContent = deckName + " (" + (deck2Tiddlers[deckName] || []).length + ")"
+    if (!deck2Tiddlers[deckName] || deck2Tiddlers[deckName].length == 0) deck2Elem[currentlyRevisingDeck].style.display = "none"
 }
+var deck2Elem = {}
 function addDeckButton (deckName) {
     var deckElem = document.getElementById("twsr-deck-" + deckName)
     if (!deckElem) {
@@ -105,15 +114,24 @@ function addDeckButton (deckName) {
         deckElem.className = 'tc-tag-label tc-tag-list-item tc-btn-invisible'
         deckElem.addEventListener('click', function () {
             if (!deck2Tiddlers[deckName] || deck2Tiddlers[deckName].length == 0) return
+            revisingAnything = false
             setCurrentlyRevising(deckName, Math.floor(Math.random()*deck2Tiddlers[deckName].length))
         })
         twsrDecks.appendChild(deckElem)
     }
     deckElem.textContent = deckName + " (" + (deck2Tiddlers[deckName] || []).length + ")"
+    deck2Elem[deckName] = deckElem
 }
 config.decks.forEach(d => {
-    addDeckButton(d)
+    if (deck2Tiddlers[d]) addDeckButton(d)
 })
+var numToReviseElem = document.getElementById("twsr-number-to-revise")
+numToReviseElem.textContent = `${totalToRevise} cards to revise today`
+var reviseOuterElem = document.getElementById("twsr-revise-outer")
+if (totalToRevise == 0) {
+    reviseOuterElem.style.display = "none"
+    return
+}
 var revisingNameText = document.getElementById("twsr-revising-name")
 var revisingShowLink = document.getElementById("twsr-revising-show")
 revisingShowLink.addEventListener('click', showResultButtons)
@@ -127,6 +145,8 @@ function finishOneRevision(newDelay, newMemoryStrength) {
     saveJson(configFilename,config)
     saveJson(delaysFilename,delays)
     saveJson(intervalsFilename,intervals)
+    totalToRevise--
+    numToReviseElem.textContent = `${totalToRevise} cards to revise today`
     // update deck UI and data
     console.log(logPrefix + "new delay for \"" + currentlyRevising +"\" is " + newDelay)
     if (newDelay > 0) {
@@ -142,6 +162,15 @@ function finishOneRevision(newDelay, newMemoryStrength) {
                 }
             }
         })
+    }
+    if (totalToRevise == 0) {
+        reviseOuterElem.style.display = "none"
+        return
+    }
+    // potentially set a different deck
+    if (revisingAnything) {
+        reviseAnything()
+        return
     }
     if (deck2Tiddlers[currentlyRevisingDeck].length > 0) {
         // show new thing to revise ...

@@ -10,6 +10,10 @@ type: text/vnd.tiddlywiki
 <div id="twsr-add-deck">
 <input type="text" placeholder="Write tag to add as deck">
 </div>
+<div id="twsr-number-to-revise">
+0 cards to revise
+</div>
+<div id="twsr-revise-outer">
 <div id="twsr-revise-anything">
 <button>Revise anything</button>
 </div>
@@ -20,10 +24,11 @@ type: text/vnd.tiddlywiki
 (<a id="twsr-revising-show" class="tc-tiddlylink"></a>)
 </div>
 <div id="twsr-res-btns">
-<button id="twsr-res-again">again</button>
-<button id="twsr-res-hard">hard</button>
-<button id="twsr-res-good">good</button>
-<button id="twsr-res-easy">easy</button>
+<div id="twsr-res-again">again</div>
+<div id="twsr-res-hard">hard</div>
+<div id="twsr-res-good">good</div>
+<div id="twsr-res-easy">easy</div>
+</div>
 </div>
 </div>
 
