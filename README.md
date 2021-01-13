@@ -6,6 +6,7 @@ Check the demo and import the plugin here: https://tadeaspaule.com/twsr
 ## Features
 - Create flashcards from tiddlers just by adding a tag
 - Revise your flashcards through the sidebar
+- Cloze prompts and custom prompts supported (otherwise uses tiddler title as prompt by default)
 - Control over parameters that determine spacing intervals
     - Anki's algorithm is used
     - You don't need to touch anything for things to work, but you can tweak things if you want
