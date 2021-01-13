@@ -53,10 +53,10 @@ for (var i = 0; i < allTiddlers.length; i++) {
 function saveJson (filename, tiddler) {
     $tw.wiki.addTiddler(new $tw.Tiddler({title: filename, text: JSON.stringify(tiddler,null,"\t"), type: "application/json"}))
 }
+config.lastTimestamp = currentTimestamp
+saveJson(configFilename,config)
 if (diffDays > 0) {
     // delays were changed, update timestamp and delays tiddler
-    config.lastTimestamp = currentTimestamp
-    saveJson(configFilename,config)
     saveJson(delaysFilename,delays)
 }
 // setup UI and functionality ----------------------------------------------------
