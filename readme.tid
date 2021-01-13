@@ -34,7 +34,8 @@ If none is given, the tiddler's title will be used as a prompt.
 !!! Revising
 # There is a sidebar tab called `SR` wherever you have your sidebar. Open it
 # Either `Revise anything`, or click on a specific deck, this gives you a prompt
-# When you want, select from the options `again`, `hard`, `good` or `easy`, which will show you the tiddler in question and put it back in the deck (if not `again`)
+# Once you've revised, click `show`, which will open the tiddler in question
+# Rate your performance; select from the options `again`, `hard`, `good` or `easy`. This puts it back in the deck (if not `again`) and sets a new interval
 
 !! Customization
 `twsr` uses [[Anki's calculation for intervals|https://gist.github.com/fasiha/31ce46c36371ff57fdbc1254af424174]], which uses several parameters (static ones: `failMultiplier`, `multiplier`, `easyMultiplier`, `minMemoryStrength`; dynamic: `memoryStrength`).
