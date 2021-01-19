@@ -10,18 +10,23 @@ type: application/javascript
 /*global $tw: false */
 "use strict";
 
+
+const STORY_TIDDLER_TITLE = "$:/StoryList";
+
 exports.name = "twsr-sidebar-open";
 exports.params = [];
 exports.run = function() {
 
 try {
 // read decks and delays (and decrement if necessary) ----------------------------
+console.log($tw)
 var currentlyRevisingDeck = null
 var currentlyRevising = null
 var currentlyRevisingAt = -1
 const configFilename = "$:/config/twsr-config"
 const delaysFilename = "$:/config/twsr-delays"
 const intervalsFilename = "$:/config/twsr-intervals"
+const sidebarFilename = "$:/plugins/tadeaspaule/twsr/sidebar"
 var allTiddlers = $tw.wiki.allTitles()
 var config = JSON.parse($tw.wiki.getTiddler(configFilename).fields.text)
 const minMemoryStrength = config.minMemoryStrength || 1300 // used by Anki
@@ -221,12 +226,6 @@ function setCurrentlyRevising(deckName,index) {
         }
     }
     revisingNameText.textContent = 'Revising: ' + prompt
-    revisingShowLink.href = '#'+value // TODO instead use some $tw navigation functionality?
-    // revisingShowLink.addEventListener('click', function() { everything I try still ends up with # remaining
-    //     setTimeout(() => { // not a big deal but annoying
-    //         window.history.pushState({},document.title,'/')
-    //     },20);
-    // })
     revisingShowLink.textContent = 'show'
     resultButtons.style.display = 'none'
     // update look & values for result buttons
@@ -249,6 +248,20 @@ function setCurrentlyRevising(deckName,index) {
 }
 function showResultButtons () {
     resultButtons.style.display = 'flex'
+    // add curerntlyRevising tiddler to the end of the story
+    const storyTiddler = $tw.wiki.getTiddler(STORY_TIDDLER_TITLE);
+    var newList;
+    if (document.getElementsByClassName("krystal-header").length > 0) newList = [sidebarFilename,currentlyRevising]
+    else newList = storyTiddler.fields.list.concat(currentlyRevising)
+    $tw.wiki.addTiddler(new $tw.Tiddler({title: STORY_TIDDLER_TITLE, list: newList}));
+    // dispatch a tm-scroll event (scroll new tiddler into view. should support plugins like Krystal)
+    setTimeout(() => {
+        const storyElem = document.getElementsByClassName("tc-story-river")[0]
+        $tw.rootWidget.dispatchEvent({
+            type: "tm-scroll",
+            target: storyElem.children[storyElem.children.length-2]
+        })
+    },50)
 }
 
 } catch (err) {
@@ -257,3 +270,4 @@ function showResultButtons () {
 }};
 
 })();
+    

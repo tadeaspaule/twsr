@@ -45,3 +45,6 @@ type: text/plain
 #twsr-res-easy {
   border-color: blue ! important;
 }
+#twsr-revising-show {
+  cursor: pointer;
+}
