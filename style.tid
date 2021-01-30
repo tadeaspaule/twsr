@@ -48,3 +48,32 @@ type: text/plain
 #twsr-revising-show {
   cursor: pointer;
 }
+.twsr-config {
+  display: flex;
+  flex-direction: column;
+}
+.twsr-config p {
+  margin: 0;
+}
+.twsr-config h3 {
+  margin: 5px 0px;
+}
+.twsr-cfg-entry {
+  display: flex;
+  flex-direction: column;
+  margin: 2px 0px;
+}
+.twsr-cfg-entry .desc {
+  color: #0008;
+  margin-top: -3px;
+}
+.fr {
+  display: flex;
+  flex-direction: row;
+}
+.twsr-cfg-entry span {
+  flex: 1;
+}
+.twsr-cfg-entry input {
+  width: 70px;
+}

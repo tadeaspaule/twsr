@@ -1,0 +1,43 @@
+created: 20200511221340000
+modified: 20200922145300000
+tags: 
+title: $:/plugins/tadeaspaule/twsr/config
+
+<div class="twsr-config">
+
+<h4>You can read about how the interval algorithm (from Anki & used by twsr) works <a href="https://gist.github.com/fasiha/31ce46c36371ff57fdbc1254af424174" target="_blank">here</a></h4>
+
+<h3>Multipliers: determine interval length</h3>
+
+<div class="twsr-cfg-entry">
+<div class="fr">
+<span>Fail multiplier</span><$edit-text tiddler="$:/config/twsr-config" field="failMultiplier"/>
+</div>
+<span class="desc">Affects how severely you are punished for "failing" a card. Default is 0</span>
+</div>
+
+<div class="twsr-cfg-entry">
+<div class="fr">
+<span>Normal multiplier</span><$edit-text tiddler="$:/config/twsr-config" field="multiplier"/>
+</div>
+<span class="desc">Affects interval after a "normal" result. Default is 1</span>
+</div>
+
+<div class="twsr-cfg-entry">
+<div class="fr">
+<span>Easy multiplier</span><$edit-text tiddler="$:/config/twsr-config" field="easyMultiplier"/>
+</div>
+<span class="desc">Affects interval after an "easy" result. Default is 1.3</span>
+</div>
+
+
+<h3>Memory strength</h3>
+
+<div class="twsr-cfg-entry">
+<div class="fr">
+<span>Minimum memory strength</span><$edit-text tiddler="$:/config/twsr-config" field="minMemoryStrength"/>
+</div>
+<span class="desc">Determines lowest value for memory strength; a dynamic measure of how good your memory's been in past revisions. Default is 1300</span>
+</div>
+
+</div>

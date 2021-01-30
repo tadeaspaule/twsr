@@ -28,8 +28,8 @@ const delaysFilename = "$:/config/twsr-delays"
 const intervalsFilename = "$:/config/twsr-intervals"
 const sidebarFilename = "$:/plugins/tadeaspaule/twsr/sidebar"
 var allTiddlers = $tw.wiki.allTitles()
-var config = JSON.parse($tw.wiki.getTiddler(configFilename).fields.text)
-const minMemoryStrength = config.minMemoryStrength || 1300 // used by Anki
+var configFields = $tw.wiki.getTiddler(configFilename).fields
+var config = JSON.parse(configFields.text)
 var currentTimestamp = (new Date()).toISOString().split('T')[0]
 var lastTimestamp = config.lastTimestamp || currentTimestamp
 const diffTime = Math.abs(new Date(currentTimestamp) - new Date(lastTimestamp));
@@ -39,28 +39,51 @@ console.log(logPrefix + diffDays + " days since last revision")
 var delays = JSON.parse($tw.wiki.getTiddler(delaysFilename).fields.text)
 var intervals = JSON.parse($tw.wiki.getTiddler(intervalsFilename).fields.text)
 var tiddler2details = {}
+var collectionCard2Deck = {}
 var deck2Tiddlers = {}
 var totalToRevise = 0
 for (var i = 0; i < allTiddlers.length; i++) {
     var tiddler = $tw.wiki.getTiddler(allTiddlers[i])
-    if (tiddler && tiddler.fields && tiddler.fields.tags && tiddler.fields.tags.includes("twsr")) {
-        if (!delays[tiddler.fields.title]) delays[tiddler.fields.title] = 0
-        else delays[tiddler.fields.title] = delays[tiddler.fields.title] - diffDays
-        if (delays[tiddler.fields.title] && delays[tiddler.fields.title] > 0) continue // tiddler not yet due for revision
-        tiddler2details[tiddler.fields.title] = tiddler.fields
-        var tiddlerHasDeck = false
-        for (var d = 0; d < config.decks.length; d++) {
-            if (tiddler.fields.tags.includes(config.decks[d])) {
-                tiddlerHasDeck = true
-                if (deck2Tiddlers[config.decks[d]] == undefined) deck2Tiddlers[config.decks[d]] = []
-                deck2Tiddlers[config.decks[d]].push(tiddler.fields.title)
+    if (tiddler && tiddler.fields && tiddler.fields.tags) {
+        var twsrTag = tiddler.fields.tags.find(t => t === "twsr" || t === "twsr-collection")
+        if (!twsrTag) continue
+        else if (twsrTag === "twsr-collection") {
+            var entries = tiddler.fields.text.split('\n')
+            console.log("getting sep")
+            var sep = tiddler.fields.sep || "="
+            console.log(tiddler.fields)
+            console.log(sep)
+            for (var e = 0; e < entries.length; e++) {
+                var entry = entries[e].trim()
+                console.log(entry)
+                if (entry.length == 0 || !entry.includes(sep)) continue
+                var parts = entry.split(sep)
+                processCard(parts[0],parts[1])
             }
         }
-        if (tiddlerHasDeck) totalToRevise += 1
+        else processCard(tiddler.fields.title, tiddler.fields)
     }
 }
+function processCard (cardName, details) {
+    if (!delays[cardName]) delays[cardName] = 0
+    else delays[cardName] = delays[cardName] - diffDays
+    if (delays[cardName] && delays[cardName] > 0) return // tiddler not yet due for revision
+    tiddler2details[cardName] = details
+    var tiddlerHasDeck = false
+    for (var d = 0; d < config.decks.length; d++) {
+        if (tiddler.fields.tags.includes(config.decks[d])) {
+            tiddlerHasDeck = true
+            if (deck2Tiddlers[config.decks[d]] == undefined) deck2Tiddlers[config.decks[d]] = []
+            deck2Tiddlers[config.decks[d]].push(cardName)
+            if (typeof details == "string") collectionCard2Deck[cardName] = config.decks[d]
+        }
+    }
+    if (tiddlerHasDeck) totalToRevise += 1
+}
 function saveJson (filename, tiddler) {
-    $tw.wiki.addTiddler(new $tw.Tiddler({title: filename, text: JSON.stringify(tiddler,null,"\t"), type: "application/json"}))
+    var obj = {title: filename, text: JSON.stringify(tiddler,null,"\t"), type: "application/json"}
+    if (filename === configFilename) obj = Object.assign(obj,configFields)
+    $tw.wiki.addTiddler(new $tw.Tiddler(obj))
 }
 config.lastTimestamp = currentTimestamp
 saveJson(configFilename,config)
@@ -139,9 +162,15 @@ if (totalToRevise == 0) {
 }
 var revisingNameText = document.getElementById("twsr-revising-name")
 var revisingShowLink = document.getElementById("twsr-revising-show")
+var collectionResult = document.getElementById("twsr-collection-result")
 revisingShowLink.addEventListener('click', showResultButtons)
 var results = ['again','hard','good','easy']
 var resultButtons = document.getElementById("twsr-res-btns")
+function removeFromDeck(deckName, index) {
+    console.log(logPrefix + "Removing revised card from deck " + deckName)
+    deck2Tiddlers[deckName].splice(index,1)
+    resetDeck(deckName)
+}
 function finishOneRevision(newDelay, newMemoryStrength) {
     // update delays, config, intervals DataTiddlers
     delays[currentlyRevising] = newDelay
@@ -150,24 +179,31 @@ function finishOneRevision(newDelay, newMemoryStrength) {
     saveJson(configFilename,config)
     saveJson(delaysFilename,delays)
     saveJson(intervalsFilename,intervals)
-    totalToRevise--
-    numToReviseElem.textContent = `${totalToRevise} cards to revise today`
     // update deck UI and data
     console.log(logPrefix + "new delay for \"" + currentlyRevising +"\" is " + newDelay)
     if (newDelay > 0) {
-        tiddler2details[currentlyRevising].tags.forEach(t => {
+        totalToRevise--
+        if (typeof tiddler2details[currentlyRevising] == "string") {
+            var deck = collectionCard2Deck[currentlyRevising]
+            for (var i = 0; i < deck2Tiddlers[deck].length; i++) {
+                if (deck2Tiddlers[deck][i] == currentlyRevising) {
+                    removeFromDeck(deck,i)
+                    break
+                }
+            }
+        }
+        else tiddler2details[currentlyRevising].tags.forEach(t => {
             if (deck2Tiddlers[t]) {
                 for (var i = 0; i < deck2Tiddlers[t].length; i++) {
                     if (deck2Tiddlers[t][i] == currentlyRevising) {
-                        console.log(logPrefix + "Removing revised card from deck " + t)
-                        deck2Tiddlers[t].splice(i,1)
-                        resetDeck(t)
+                        removeFromDeck(t,i)
                         break
                     }
                 }
             }
         })
     }
+    numToReviseElem.textContent = `${totalToRevise} cards to revise today`
     if (totalToRevise == 0) {
         reviseOuterElem.style.display = "none"
         return
@@ -186,6 +222,7 @@ function finishOneRevision(newDelay, newMemoryStrength) {
         revisingNameText.textContent = 'Revising: '
         revisingShowLink.textContent = ''
     }
+    collectionResult.textContent = ""
 }
 for (var i = 0; i < 4; i++) {
     const idx = i
@@ -196,7 +233,11 @@ for (var i = 0; i < 4; i++) {
     })
 }
 // vars for results (setting new intervals and memoryStrength)
-var m0 = config.failMultiplier || 0, m = config.multiplier || 1, m4 = config.easyMultiplier || 1.3
+const {failMultiplier,multiplier,easyMultiplier,minMemoryStrength} = configFields
+var m0 = parseFloat(failMultiplier) || 0, m = parseFloat(multiplier) || 1, m4 = parseFloat(easyMultiplier) || 1.3
+console.log("M0")
+console.log(m0)
+console.log(configFields)
 var newDelays = [], newFs = []
 function resultButtonClicked (index) {
     // using Anki algorithms found described here: https://gist.github.com/fasiha/31ce46c36371ff57fdbc1254af424174
@@ -211,7 +252,7 @@ function setCurrentlyRevising(deckName,index) {
     currentlyRevisingDeck = deckName
     currentlyRevisingAt = index
     var prompt = value
-    if (tiddler2details[currentlyRevising].prompt) {
+    if (typeof tiddler2details[currentlyRevising] == "object" && tiddler2details[currentlyRevising].prompt) {
         prompt = tiddler2details[currentlyRevising].prompt
         // check if Cloze prompt
         var clozeParts = prompt.match(/c\[[^\]]+\]/g)
@@ -248,6 +289,11 @@ function setCurrentlyRevising(deckName,index) {
 }
 function showResultButtons () {
     resultButtons.style.display = 'flex'
+    if (typeof tiddler2details[currentlyRevising] == "string") {
+        collectionResult.textContent = tiddler2details[currentlyRevising]
+        return
+    }
+    else collectionResult.textContent = ""
     // add curerntlyRevising tiddler to the end of the story
     const storyTiddler = $tw.wiki.getTiddler(STORY_TIDDLER_TITLE);
     var newList;

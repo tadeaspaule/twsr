@@ -1,13 +1,13 @@
 created: 20210105161211558
 modified: 20210105164253086
 tags: 
-title: Spaced Repetition in TiddlyWiki
+title: $:/plugins/tadeaspaule/twsr/readme
 type: text/vnd.tiddlywiki
 
 This plugin brings [[spaced repetition|https://en.wikipedia.org/wiki/Spaced_repetition]] to TiddlyWiki, without any external systems. This means that you don't have to switch back and forth between tiddlers and software like [[Anki|https://apps.ankiweb.net/]], you can just stay within your wiki, creating new flashcards, revising them, etc.
 
 !! How to import this plugin
-Go to $:/plugins/tadeaspaule/twsr and drag the plugin block to the window that has your TiddlyWiki.
+Drag the above plugin block to the window that has your TiddlyWiki.
 
 !! How to use
 !!! Creating decks
@@ -27,9 +27,27 @@ Simply add a `twsr` tag to a tiddler and it becomes a flashcard (it also needs t
 
 If you want to specify a prompt, add a `prompt` field (see example [[(twsr) Card with prompt]]).
 
-If you want to specify a Cloze prompt, add a `prompt` field with a value like `Some c[of] c[this] is c[hidden]` (see example [[(twsr) Card with Cloze prompt]]).
+If you want to specify a Cloze prompt, add a `prompt` field with a value like `Some c[of] c[these words] are c[hidden]` (see example [[(twsr) Card with Cloze prompt]]).
 
 If none is given, the tiddler's title will be used as a prompt.
+
+!!! Creating collections
+What if you have many small things to revise, and don't want to have a tiddler for each, such as for language learning? Worry not, you can do this too!
+
+# Create a tiddler with the tags `twsr` and `twsr-collection`
+# Each line of text will be one flashcard, in the format `{prompt}{separator}{answer}`. The default separator is `=`
+# Don't forget to add a deck just like with normal flashcards!
+
+Example for basic usage: [[(twsr) German words]]. Example with a custom separator: [[(twsr) German words (custom separator)]] (you just edit the `sep` field)
+
+```
+yellow=gelb
+red=rot
+```
+
+That's it! Each word will track its own delays and intervals, too.
+
+If you want to set a custom separator (for example if you want to use `=` in the prompt/answer), you can add a field `sep` to the collection tiddler with your desired value.
 
 !!! Revising
 # There is a sidebar tab called `SR` wherever you have your sidebar. Open it

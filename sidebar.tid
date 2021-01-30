@@ -22,6 +22,8 @@ type: text/vnd.tiddlywiki
 <div class="twsr-revising">
 <span id="twsr-revising-name">Revising: </span>
 (<a id="twsr-revising-show" class="tc-tiddlylink"></a>)
+<br>
+<span id="twsr-collection-result"></span>
 </div>
 <div id="twsr-res-btns">
 <div id="twsr-res-again">again</div>
