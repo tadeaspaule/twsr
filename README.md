@@ -2,7 +2,7 @@
 
 Spaced Repetition system for TiddlyWiki. Doesn't require any external managers like Anki.
 
-Check the demo and import the plugin here: https://tadeaspaule.com/twsr
+Check the demo and import the plugin here: https://tadeas.dev/twsr
 
 ## Features
 
